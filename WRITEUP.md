@@ -12,17 +12,17 @@ here; the words are yours.
 Give these to Claude before any analysis runs. One sentence each, plus one sentence on why you
 think so.
 
-**(1) A movie you know well, and what its three most-used tags will be:** XXXX
+**(1) A movie you know well, and what its three most-used tags will be:** Godfather - the most used tags would probably be #Italian-Mafia, #Drama, #Saga
 
-**(1) Why you think so:** XXXX
+**(1) Why you think so:** These terms broadly encompass the kind of movies Godfather falls under - I feel they would be the most probable words that come to mind for a general audience when thinking of this movie.
 
-**(2) Out of every 100 people who rated movies here, how many ever added a tag?** XXXX
+**(2) Out of every 100 people who rated movies here, how many ever added a tag?** 10 people
 
-**(2) Why you think so:** XXXX
+**(2) Why you think so:** I have never added a tag for a movie myself and don't know anyone who actively does in my circle. Given I'm not exactly a big fan of movies, my estimate may be conservative. But I'm still quite sure that it's a low percentage of people who add tags.
 
-**(3) Can one person's tags take over a movie's tag list? Yes or no:** XXXX
+**(3) Can one person's tags take over a movie's tag list? Yes or no:** NO
 
-**(3) Why you think so:** XXXX
+**(3) Why you think so:** I would assume we only count one "unique tag" per user for a movie - repeated tags by the same user would not be useful for the same movie
 
 ## Part 1. Whose data is this?
 
