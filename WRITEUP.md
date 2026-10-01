@@ -28,17 +28,17 @@ think so.
 
 Code: `part1_data.py`.
 
-**My rule for cutting 32 million ratings to 5 million** (written before reading `data/make_compact.py`)**:** XXXX
+**My rule for cutting 32 million ratings to 5 million** (written before reading `data/make_compact.py`)**:** I did read through it, I dont fully understand the process - but it seems the process that it uses and what makes sense to me is to set a threshold for users in terms of number of ratings and use that as a way to filter down to a smaller subset of the data that is of more use to our research context.
 
-**One rule I considered and rejected, and why:** XXXX
+**One rule I considered and rejected, and why:** Random samples of the 32 million could be an approach. It could, and probably would, leave out important data on taggers who we are interested in.
 
-**One interesting thing from `data/README.md`:** XXXX
+**One interesting thing from `data/README.md`:** I found the broader choices (i.e going for 20+ ratings as a threshold only from the top 4,000 movies selected) that went into creating the compact data set interesting - there is quite some thought to it. It seems to be obvious once you understand it, but it is definitely intentionally ordered this way to extract a dataset that best fits the study's needs.
 
-**How the script's rule differs from mine, and what each keeps that the other drops:** XXXX
+**How the script's rule differs from mine, and what each keeps that the other drops:** I was thinking of just fitlering the users that met the ratings thredhold and then deal with whatever movies fell in that pool - I am wondering why we didn't filter the most tagged movies instead of filtering the top rated movies - what happens to the more niche movies that have higher tag counts in our study? The script is leaving out more niche (high tagged) movies that do not fall in the top 4000 - my approach would have had no ordering of the movies by any variable since the movies would have just been whatever fell under the reviewd ones for the users who had 20+ ratings in the original dataset. Later thought: I didn't think about how I would have to hit the 5 million number - I just assumed it would be below 5 million total ratings - maybe it would make sense to have my rule filter the movies in the pool by most ratings until we hit the closest difference to 5 million ratings below or above.
 
-**First check. Which of Claude's numbers, the different route you took, and whether it matched** (one good target: 6 tags are the literal text `NA`, which pandas drops unless told not to)**:** XXXX
+**First check. Which of Claude's numbers, the different route you took, and whether it matched** (one good target: 6 tags are the literal text `NA`, which pandas drops unless told not to)**:** Median tag applications per user, came from part1_data.py. Raw file with a different library. Yes it matched. Yes median barely moves across 6 row changes, but if you konw that pandas is going to drop them then it should not be a problem
 
-**Second check. Which of Claude's numbers, the different route you took, and whether it matched:** XXXX
+**Second check. Which of Claude's numbers, the different route you took, and whether it matched:** It looks at median ratings per movie, comes from part1_data.py, also takes on the raw file with a different library approach, and Yes it matched
 
 ## Part 2. What tags best describe a movie?
 

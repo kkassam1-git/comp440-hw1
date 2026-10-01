@@ -34,19 +34,76 @@ No figures are required in Part 1. `WRITEUP.md` takes one interesting thing from
 rule differs from yours, and your two checks.
 """
 
+import csv
+import gzip
+import statistics
+from collections import Counter
+from pathlib import Path
+
 from load_data import load_all
+
+DATA = Path(__file__).parent / "data"
+
+FULL_RATINGS = 32_000_204  # all MovieLens 32M ratings, from data/README.md
+
+
+def spread(counts, label):
+    print(f"  {label:<28} median {counts.median():>8,.0f}   "
+          f"min {counts.min():>6,}   max {counts.max():>7,}")
 
 
 def part1_data(ratings, tags, movies, links):
-    print("part 1 unimplemented")  # delete this line when you start
-
     print("== (a) how much ==")
+    for name, frame in (("ratings", ratings), ("tags", tags),
+                        ("movies", movies), ("links", links)):
+        print(f"  {name:<8} {len(frame):>10,} rows")
+    print(f"  distinct users  (in ratings) {ratings.userId.nunique():,}")
+    print(f"  distinct movies (in ratings) {ratings.movieId.nunique():,}")
+    print(f"  share of all {FULL_RATINGS:,} ML-32M ratings: "
+          f"{len(ratings) / FULL_RATINGS:.1%}")
 
     print("== (b) spread ==")
+    spread(ratings.groupby("userId").size(), "ratings per user")
+    spread(ratings.groupby("movieId").size(), "ratings per movie")
+    # only users and movies with at least one tag appear in these two
+    spread(tags.groupby("userId").size(), "tag applications per user")
+    spread(tags.groupby("movieId").size(), "tag applications per movie")
+    raters = ratings.userId.unique()
+    taggers = tags.userId.unique()
+    n_both = len(set(raters) & set(taggers))
+    print(f"  users who rated anything: {len(raters):,}; of them ever applied a tag: "
+          f"{n_both:,} ({n_both / len(raters):.1%})")
 
     print("== (c) top tags, two ways ==")
+    # raw tag strings, exactly as typed: no case or spacing merged
+    by_tag = tags.groupby("tag").agg(applications=("userId", "size"),
+                                     users=("userId", "nunique"))
+    for col, title in (("applications", "by number of applications"),
+                       ("users", "by number of distinct users")):
+        print(f"  top 20 {title}:")
+        top = by_tag.sort_values([col, "applications"], ascending=False).head(20)
+        print(f"    {'tag':<30} {'applications':>12} {'users':>7}")
+        for tag, row in top.iterrows():
+            print(f"    {tag:<30} {row.applications:>12,} {row.users:>7,}")
 
     print("== (d) two checks ==")
+    # the student's route: read the raw .csv.gz files with the standard library
+    # (gzip, csv, statistics), with no pandas and no load_data.py
+    checks = (
+        ("median tag applications per user", "tags.csv.gz", "userId",
+         tags.groupby("userId").size().median()),
+        ("median ratings per movie", "ratings.csv.gz", "movieId",
+         ratings.groupby("movieId").size().median()),
+    )
+    for label, filename, key, pandas_value in checks:
+        counts = Counter()
+        with gzip.open(DATA / filename, "rt", newline="") as f:
+            for row in csv.DictReader(f):
+                counts[row[key]] += 1
+        raw_value = statistics.median(counts.values())
+        verdict = "MATCH" if raw_value == pandas_value else "DIFFER"
+        print(f"  {label:<34} pandas {pandas_value:>8,.1f}   "
+              f"raw csv {raw_value:>8,.1f}   {verdict}")
 
 
 if __name__ == "__main__":
