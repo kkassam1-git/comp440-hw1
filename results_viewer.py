@@ -51,7 +51,20 @@ DEFINITION = ("A disagreement is a movie-tag pair whose rank under score() and i
               "broken alphabetically." % GAP)
 CSS = """body { font-family: Helvetica, Arial, sans-serif; margin: 20px; }
 table { border-collapse: collapse; margin-bottom: 12px; }
-th, td { border: 1px solid #999999; padding: 4px 8px; text-align: left; }"""
+th, td { border: 1px solid #999999; padding: 4px 8px; text-align: left; }
+details.movie > summary h2 { display: inline; }
+#search { font-size: 16px; padding: 6px; width: 320px; margin-bottom: 12px; }"""
+
+# the student's improvement 3: a search box that hides movies whose title does not match
+SEARCH = """<input id="search" type="search" placeholder="Search movies by title">
+<script>
+document.getElementById("search").addEventListener("input", function () {
+  var q = this.value.toLowerCase();
+  document.querySelectorAll("details.movie").forEach(function (d) {
+    d.style.display = d.dataset.title.indexOf(q) === -1 ? "none" : "";
+  });
+});
+</script>"""
 
 
 def as_date(stamp):
@@ -170,19 +183,25 @@ def list_html(tags):
 def render(movies):
     """Build the page."""
     head = "<title>Results Viewer v0</title>\n<style>\n%s\n</style>" % CSS
-    body = ["<h1>Results Viewer</h1>", "<p>%s</p>" % html.escape(DEFINITION)]
+    body = ["<h1>Results Viewer</h1>", "<p>%s</p>" % html.escape(DEFINITION), SEARCH]
     for movie in movies:
         body += [
-            "<h2>%s</h2>" % html.escape(movie["title"]),
+            # the student's improvement 3: each movie collapses under its title
+            '<details class="movie" data-title="%s"><summary><h2>%s</h2></summary>'
+            % (html.escape(movie["title"].lower()), html.escape(movie["title"])),
+            # the student's improvement 2: the disagreements come first
+            "<h3>Biggest disagreements, score() against the judge</h3>",
+            table_html(["Tag", "score() rank", "Judge rank"], movie["gaps"]),
             "<h3>By count</h3>", list_html(movie["counts"]),
             "<h3>Your order</h3>", list_html(movie["mine"]),
             "<h3>The judge's order</h3>", list_html(movie["judge"]),
             "<h3>Your score()</h3>", list_html(movie["score"]),
-            "<h3>Tags on this movie</h3>",
+            # the student's improvement 1: the raw applications start collapsed
+            "<details><summary><strong>Tags on this movie</strong> (%d applications by %d "
+            "people, click to show)</summary>" % (len(movie["apps"]), movie["people"]),
             table_html(["Tag", "User", "Date"], movie["apps"]),
-            "<p>%d applications by %d people.</p>" % (len(movie["apps"]), movie["people"]),
-            "<h3>Biggest disagreements, score() against the judge</h3>",
-            table_html(["Tag", "score() rank", "Judge rank"], movie["gaps"]),
+            "</details>",
+            "</details>",
         ]
     body = "\n".join(body)
     return ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'

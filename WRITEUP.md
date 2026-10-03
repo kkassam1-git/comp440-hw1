@@ -163,32 +163,40 @@ My mind goes straight to data pipelines that I was working with over the summer 
 
 ### The viewer and the disagreements
 
-**One thing `movie_results.html` showed me that was useful, and one thing about it that got in my way:** XXXX
+**One thing `movie_results.html` showed me that was useful, and one thing about it that got in my way:** Seeing the disagreement list is useful and comparing it to the raw tag applicaiton list helps with verifying the results of the disgreement list, i.e. father-son relationship is ranked number 3 by the judge for The Godfather but varies drastically from the score() rank 38, given it only shows up twice in the list.
+
+The massive lists is defintely what is coming in my way, I barely found the disagreement list and a lot of it seems to be noise we can remove and build into more targetted lists for movies with filters built in to assist with navigating to information we need.
 
 Then three improvements. For each: what the page would not let you see, what you had Claude
 change, and what the changed page shows that the first draft did not.
 
-**Improvement 1:** XXXX
+**Improvement 1:** The disagreement table and four rankings were in the noise of dat aon the page, every raw tag application was listed out, -  the raw list is now under a drop down that summarizes it as number of applications per these many users
 
-**Improvement 2:** XXXX
+**Improvement 2:** the disagreement table was buried at the end of each movi'es section - after the reankings and raw tag lists, now it's the first thing under the movie's title. The table usedd to spot the issues is immediately visible to the user.
 
-**Improvement 3:** XXXX
+**Improvement 3:** A search bar should help pick movies that should be analyzed in this way and add a dropdown/collapse feature for each movie (the headings/subheadings collpase information accordingly - what if we were looking at a list of 50 movies. It shows the search bar which was not there before
 
 Then the three disagreements. A disagreement is a movie and a tag where your `score()` and the
 judge are furthest apart. For each: the movie and the tag, where your `score()` put it and where
 the judge put it, and what you think accounts for the gap.
 
-**Disagreement 1:** XXXX
+**Disagreement 1:** father-son relationship is ranked number 3 by the judge for The Godfather but varies drastically from the score() rank 38, given it only shows up twice in the list. The judge recofgnized the "father-son relationship" is a descriptor of the The Godfather but does not account for the frequency of its occurence as a tag.
 
-**Disagreement 2:** XXXX
+**Disagreement 2:** The 2nd is "Martin Scorsese" (Wolf of Wall Street) - judge ranks it at 35, and score() at 2nd, a 33 point gap. This represents an opposite trend coming into play as the last one, where this tag is applied 82 times so score() pushed it to the top. A director's name is not a description of the central theme, which explains why the judge ranked it really low.
 
-**Disagreement 3:** XXXX
+**Disagreement 3:** "Robert De Niro" from The Godfather. Score() ranked it at 10th and judge ranked it at 45 - that's another 35 gap there. Robert De Niro is not even in the first movie, which means the judge does a good job at not ranking it amongst tags that are "best" or "good" - score() fails to do that since it's a volume based calculation, the high number of applications pushed it to the top 10.
 
-**One other high-level pattern in the results, and what you think is behind it:** XXXX
+**One other high-level pattern in the results, and what you think is behind it:** Famous individuals acting or associated wtih movies get tagged constantly on these movies, so we see it occue with Leonardo Di Cpario or ANthony Hopkins - where the tag does not do much to describe the theme or experience of the movie - pushing it lower in the judge's ranking. Score() is a function of frequency be design, and clusterin here cannot extract actors names from other tag groups which makes it such that the weighting does not drop the tags position either to match that of the judge.
 
 ## Predictions revisited
 
-**Which of my three predictions were wrong, and what I make of each miss:** XXXX
+**Which of my three predictions were wrong, and what I make of each miss:**
+
+1. I was wrong about this. Two of three are generic praise tags, not content descriptors, it seems  frequent tags skew toward crowd praise and credits, not toward what a movie is specifically about - which is how I would approach tagging personally.
+
+2. I was off by a lot - the number is much higher in the compacted data set given how it is constructed.
+
+3. It seems one person can take over the movies tag list overall, but still not the ranking of tags since the same tag does not appear twice under the same user.
 
 ## Part 3. What tags best describe a user?
 

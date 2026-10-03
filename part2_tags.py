@@ -92,6 +92,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from agreement import my_order_lines
 from embed_tags import clean_tag, load_embeddings
 from load_data import load_all
 
@@ -286,6 +287,27 @@ def part2_tags(ratings, tags, movies, links):
     print(f"  scores.csv written: {out.score.notna().sum():,} rows")
 
     print("== (6) the four rankings ==")
+    print("  ties: the judge rates 1 to 5, so equal ratings are listed alphabetically")
+    judge = pd.read_csv(REPO / "judge" / "ratings_movies.csv", keep_default_na=False)
+    mine_orders = my_order_lines()
+    names = movies.set_index("movieId")["title"]
+    for movie in ten:
+        print(f"  -- {names[movie]} --")
+        lists = {
+            "the counts (raw strings, ten most applied)":
+                [f"{t} ({n})" for t, n in
+                 tags[tags.movieId == movie]["tag"].value_counts().head(10).items()],
+            "my own order (WRITEUP.md)": mine_orders.get(movie, []),
+            "the judge's order (judge/ratings_movies.csv, rating in brackets)":
+                [f"{r.tag} ({r.rating})" for r in judge[judge.id == movie]
+                 .sort_values(["rating", "tag"], ascending=[False, True]).itertuples()],
+            "my score() order (top ten)":
+                [f"{r.tag} ({r.score:.2f})" for r in
+                 scores[scores.movieId == movie].head(10).itertuples()],
+        }
+        for heading, items in lists.items():
+            print(f"    {heading}:")
+            print("      " + ", ".join(items) if items else "      (none)")
 
 
 if __name__ == "__main__":
