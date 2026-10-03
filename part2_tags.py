@@ -83,6 +83,7 @@ and what it must write:
         disagreements mean, is your paragraph in `WRITEUP.md`.
 """
 
+import re
 from pathlib import Path
 
 import matplotlib
@@ -95,7 +96,14 @@ from embed_tags import clean_tag, load_embeddings
 from load_data import load_all
 
 MY_MOVIE = 858  # the student's claimed movie: Godfather, The (1972)
-FIGURES = Path(__file__).parent / "figures"
+REPO = Path(__file__).parent
+FIGURES = REPO / "figures"
+
+
+def my_ten_movies():
+    """movieIds from the "My ten movies" slot of WRITEUP.md, read the way judge.py reads it."""
+    slot = (REPO / "WRITEUP.md").read_text(encoding="utf-8").split("**My ten movies")[-1]
+    return [int(n) for n in re.findall(r"^\s*(\d+)", slot.split("\n**")[0], re.M)]
 
 
 def per_month(frame):
@@ -260,6 +268,22 @@ def part2_tags(ratings, tags, movies, links):
         print(f"    {clean:<16} {row.applications:>7,} applications from {parts}")
 
     print("== (5) scores.csv ==")
+    judged = pd.read_csv(REPO / "judge" / "movies.csv", keep_default_na=False)
+    asked = [(int(m), t) for m, tags_ in zip(judged["id"], judged["tags"])
+             for t in tags_.split("|") if t]
+    vocabulary = {t.strip() for t in (REPO / "judge" / "vocabulary.txt")
+                  .read_text().splitlines() if t.strip()}
+    ten = my_ten_movies()
+    on_ten = (tags[tags.movieId.isin(ten)].assign(tag=clean_tag(tags["tag"]))
+              .query("tag in @vocabulary")[["movieId", "tag"]].drop_duplicates())
+    asked += list(on_ten.itertuples(index=False, name=None))
+    asked = pd.DataFrame(sorted(set(asked)), columns=["movieId", "tag"])
+    out = asked.merge(scores[["movieId", "tag", "score"]], on=["movieId", "tag"], how="left")
+    print(f"  {len(asked):,} movie-tag pairs asked for ({judged.id.nunique()} movies in "
+          f"judge/movies.csv plus {len(ten)} of mine); "
+          f"{out.score.notna().sum():,} have a score, {out.score.isna().sum():,} do not")
+    out.dropna(subset=["score"]).to_csv(REPO / "scores.csv", index=False)
+    print(f"  scores.csv written: {out.score.notna().sum():,} rows")
 
     print("== (6) the four rankings ==")
 

@@ -122,21 +122,44 @@ An order line looks like `296: nonlinear, hit men, dark comedy, ...`, the tags b
 159858: demon, Demon, supernatural, the conjuring, based on a true story, paranormal investigation, haunted house, England, 70s, British accents
 122906: Africa, Marvel, MCU, superhero, social commentary, strong female characters, great villain, predictable, diverse cast, great costumes
 
-**One criterion I considered for the judge and rejected, and why** (the one I used is in `judge/criterion.md`)**:** XXXX
+**One criterion I considered for the judge and rejected, and why** (the one I used is in `judge/criterion.md`)**:** I briefly considered using time stamp dat on these tags as a potential judging criterion but I don't think difference in when tags were tagged onto would be that useful, it may just make the reading more blurry. i did not think of how the judge could have never done that anyways, making this not a useful approach inherently, given the data we need is used here.
 
-**Agreement. The number `agreement.py` gives for your `score()`, for popularity and for your own order, and which of the three came closest to the judge:** XXXX
+**Agreement. The number `agreement.py` gives for your `score()`, for popularity and for your own order, and which of the three came closest to the judge:** Score() comes closest
+
+From `agreement.py`:
+
+| method | of 5 | movies |
+| --- | --- | --- |
+| score() | 3.44 | 110 |
+| popularity | 3.31 | 110 |
+| your own order | 2.90 | 10 |
+| best possible | 4.38 | 110 |
 
 **How the judge skill is built: the files it is made of and what each one does (about 150 words):**
 
-XXXX
+The judge skill is built from multiple md files. judge/README.md holds the rules, breakind down what each file is for, how to run, and what to share with the user. SKILL.md directs claude to the readme file.
+
+judge/system.md instructs the model - system.md is the file identical across all students. THe answers are restricuted to tag, rating line 1 to 5.
+
+judge/ criterion.md is my input into the judge skill, part of the prompt the judge sees.
+
+movies.csv - 100 movies the judge rates
+
+vocabulary.txt - the 300 tags allowed to chooose from
+
+judge.py is the central script that runs everything together. 5 sessions run in parallel adding my ten movies to the list (from WRITEUP.md) - returns the response for each movie with the relvant information
+
+results are part of judge/ratings_movies.csv, log is a short two line summary from the run
 
 **What happens when I run `/judge`, from the first check to the CSV (about 150 words):**
 
-XXXX
+Checks if the items files exits, confirms placeholder is replaced by my criterion, reads all items including my 10 movies from writeup.md, prints out what crtierion it read and how many ratings it's using. runs a claude -p session per movie, 5 in parallel (no tools or no memory per session), returns to reading the tag,rating lines, checks for movies that may hvae fewer ratings returned than expecetd by the model, writes the csvs and prints the summary lines into log
 
 **Why a skill: what a skill like this gives you that a script or a prompt alone does not, and where you would use one next (about 100 words):**
 
-XXXX
+A skill gives you a layered approach to any task with integrated script, checks, system prompts, and a way to package the response - all being guide by the boundaries set forth in the skill. It's a more cohesive package as a whole that is effectively repeatable across multiple scenarios that may require different inputs or outputs - without the fear of it breaking, since it's designed such that is can evolve and repeat around the needs presented to the skill.
+
+My mind goes straight to data pipelines that I was working with over the summer - such financial reports and data, when integrated into an agent should be supported by guardrails and fixed steps on security and data quality checks - even if the input from the user using the skill may differ from prompt to prompt.
 
 ### The viewer and the disagreements
 
