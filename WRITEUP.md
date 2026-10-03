@@ -44,9 +44,9 @@ Code: `part1_data.py`.
 
 Code: `part2_tags.py`.
 
-**My movie, and why I picked it:** XXXX
+**My movie, and why I picked it:** Godfather (1972). I think it's one of the best works of its era, the cinematography is really impressive and so is the intention behind choice in the plot, acting, and scenes.
 
-**Its most misleading tag in the count-ordered list, and why it misleads:** XXXX
+**Its most misleading tag in the count-ordered list, and why it misleads:** atmospheric might be the misleading in the list, partly because I'm not sure what is trying to descibe in a crime, mafia movie like The Gofather
 
 **What I learned about how MovieLens collects ratings and tags, from rating and tagging my movie myself (about 100 words):** XXXX
 
@@ -86,7 +86,7 @@ XXXX
 
 **My own order of the ten most-used tags, written before looking at any data: my movie from step 1, then my nine others from step 4:**
 
-XXXX
+858: mafia, Al Pacino, Mafia, crime, classic, great acting, Marlon Brando, masterpiece, organized crime, atmospheric
 
 **One criterion I considered for the judge and rejected, and why** (the one I used is in `judge/criterion.md`)**:** XXXX
 

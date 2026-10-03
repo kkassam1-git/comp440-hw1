@@ -85,11 +85,19 @@ and what it must write:
 
 from load_data import load_all
 
+MY_MOVIE = 858  # the student's claimed movie: Godfather, The (1972)
+
 
 def part2_tags(ratings, tags, movies, links):
-    print("part 2 unimplemented")  # delete this line when you start
-
     print("== (1) the obvious answer ==")
+    title = movies.set_index("movieId").loc[MY_MOVIE, "title"]
+    mine = tags[tags.movieId == MY_MOVIE]
+    print(f"  {title}: {(ratings.movieId == MY_MOVIE).sum():,} ratings, "
+          f"{len(mine):,} tag applications")
+    # raw tag strings, exactly as typed: no case or spacing merged
+    counts = mine["tag"].value_counts()
+    for tag, n in counts.items():
+        print(f"    {n:>5,}  {tag}")
 
     print("== (2) up close ==")
 
