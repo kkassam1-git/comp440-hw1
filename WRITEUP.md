@@ -48,31 +48,47 @@ Code: `part2_tags.py`.
 
 **Its most misleading tag in the count-ordered list, and why it misleads:** atmospheric might be the misleading in the list, partly because I'm not sure what is trying to descibe in a crime, mafia movie like The Gofather
 
-**What I learned about how MovieLens collects ratings and tags, from rating and tagging my movie myself (about 100 words):** XXXX
+**What I learned about how MovieLens collects ratings and tags, from rating and tagging my movie myself (about 100 words):** This is what I noticed - the reviewing is the common 5 star scale, except here the scale has descriptors added to it (awful, poor, okay, good, must watch); there are 10 possible cases going from 0 to 5 stars in intervals of 0.5.
+
+Adding a tag is as simple as typing it in and clicking add. The page shows you how many other occurences of your unique tag have been logged into the system before and the tags are all listed in order of their frequency. This is similar to the social influence scenario we read about in the reading in class. Adding a tag also has an additional step where you add whether the tag is something you like about the moive, dislike, or feel neutral about.
 
 ### Up close
 
 One sentence on the figure written before you saw it and one after. The two tables are where the
 details below come from. Say which script made them.
 
-**The figure, when the tags and the ratings arrived. What I expected:** XXXX
-**The figure, what it shows:** XXXX
+**The figure, when the tags and the ratings arrived. What I expected:** I think this is more about the tool than it is about the movie. Movielens was released in 1997, so I suppose that's the start of the x axis. Godfather is a classic a lot of people go back to, so I'm going to assume it has a consistent number of tags over the years with some outbursts resulting from references becoming popular in social media or broad experiences like COVID pushing people into watching more movies.
+**The figure, what it shows:** There are no tags before 2006 - possibly because movielens did not have that as a feature. The average number of ratings and tags does increase over time. There is a giant increase in ratings in the year 2015, more double the last peak in 1999 and more than 8 times what seems to be the average prior to the year at around 25 ratings per month. Tags also go up but barely compared to ratings.
 
-**Two interesting details I learned up close that the counts did not show:** XXXX
+A rapid increase in tags is seen in 2020, peaking in 2021. Ratings also increase, but no where in proportion to tags. Over all, ratings and tags seem volatile over the time series we're looking at.
 
-**Anything up close that contradicted something I had already written down. Which one, what the data showed, and what you now think. Or "nothing yet":** XXXX
+**Two interesting details I learned up close that the counts did not show:** The heaviest tagger has 7.45x the tags as the next one. I meant to say 1.1% earlier on and not 11% - with that in mind, if we remove the heaviest as an outlier, the range is around 1-2% in the top 10 list.
+
+THe other thing I found interesting is the most people who tagged alos rated. On average, even though the sample size are magnitudes smaller, the taggers have higher mean ratings than others. All the means for the non-taggers are about 4.26 across all tog tags.
+
+part2_tags.py from section 2
+
+**Anything up close that contradicted something I had already written down. Which one, what the data showed, and what you now think. Or "nothing yet":** For part 0, I did not account for one person submitting many different tags and it seems that for this movie, that number can go beyond 300. So in that sense a single person's tags can influence the taggine of a movie but I would not say take over, since this does not boost the frequency of unique tags and users can see that.
+
+The number of tags is way less consistent than I thought, it is definitely volatile outburts with one really large outlier.
 
 ### My definition
 
-**My `score(movie, tag)`** (one or two sentences, precise enough that a classmate could code it)**:** XXXX
+**My `score(movie, tag)`** (one or two sentences, precise enough that a classmate could code it)**:** 1. The most important factor would be the frequency of the tag, how many individual have tagged it such. 2. Tags should be compared after being classified as "very simliar" - so essentially, case or general grouping i.e. mafia or Mafia or Italian Mafia. The tag is score is weighted by its the density of tis cluseter, the more similar tags there are in its cluster, the higher its score. For mafia we take it's similarity to each of the movie'es other tags and multiply by the frequency of those tags, sum the products together and divide by total frequency of all other tags
 
-**One definition I considered and rejected, and why:** XXXX
+**One definition I considered and rejected, and why:** I didn't actively weight another decision in this process, but I did take into account how I did not want uniqueness of the tag to be part of my rule since I do not think that is indicative of a "good" tag - rather in some cases may be the opposite. So, we could say I rejected this one.
 
-**Which tags I merged as the same tag, which I kept apart, and why:** XXXX
+**Which tags I merged as the same tag, which I kept apart, and why:** I chose to merge tags that end up being the same after formatting to lower-case. Italian mafia and mafia remain two different tags in this case, since collapsing them into one would just double up my rule's score given the similarity element is already being dealt with by the clustering approach. There are limitations where two tags that are the same like scifi & sci-fi still remain separate, but I would not be too worried about them since their distance in the cluster will likely be very close and push its weight up.
 
 **Why my definition, in about 150 words. Name one thing it gains and one thing it loses:**
 
-XXXX
+It may not seem intuitive right away, but I dont think  uniqueness is a good way to score a tag here. If a tag has many others "cousins" in its cluster,  that may share a similar intention of the tagger - then that I'd say is a good indicator of the general consensus of the public on the movie, and therefore  proves that it's a good tag.
+
+People represent the frequency/popularity of the tag and the weight, as I intended, is an indication of what the movie is about and how the tag covers that. Classic for exmaple ahs the most people but a low weights sicne it does not fit into the broader "mafia" cluster I believe and italian mafia has fewer people but a much higher weight.
+
+My rule gains in supporting a central move description theme and bumping up tags that do a good job at fitting to that, compared to juste generic tags. This, again, is subjective and depends on how one determines a "good" tag in their view.
+
+My rule does lose out on not being able to look into catalog wide trends, it does not account for tag spread and genericness across the catalog and is limited scoring to only one movie.
 
 ### The judge
 
