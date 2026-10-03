@@ -98,11 +98,29 @@ An order line looks like `296: nonlinear, hit men, dark comedy, ...`, the tags b
 
 **My ten movies:**
 
-XXXX
+858, Godfather, The (1972)
+254726, Dune (2021)
+134130, The Martian (2015)
+4995, Beautiful Mind, A (2001)
+106782, Wolf of Wall Street, The (2013)
+148626, Big Short, The (2015)
+49272, Casino Royale (2006)
+278702, Glass Onion: A Knives Out Mystery (2022)
+159858, The Conjuring 2 (2016)
+122906, Black Panther (2017)
 
 **My own order of the ten most-used tags, written before looking at any data: my movie from step 1, then my nine others from step 4:**
 
 858: mafia, Al Pacino, Mafia, crime, classic, great acting, Marlon Brando, masterpiece, organized crime, atmospheric
+254726: sci-fi, politics, based on a book, space travel, visually appealing, immersive, atmospheric, boring, far future, space opera
+134130: space travel, Survival Instinct, space, scientific, sci-fi, Space, Near Future, realistic, science, mars
+4995: genius, inspirational, math, true story, intelligent, mental illness, schizophrenia, mathematics, twist ending, psychology
+106782: Leonardo DiCaprio, Nudity (Topless), drugs, Wall Street, based on a true story, Nudity (Full Frontal), great acting, Martin Scorsese, visually appealing, Funny
+148626: finance, wallstreet, Christian Bale, financial crisis, banking, true story, political, breaking the fourth wall, makes good points, interesting
+49272: action, James Bond, spy, 007, espionage, torture, Daniel Craig, spies, gambling, poker
+278702: mystery, murder mystery, capitalism, nonlinear, good writing, not consistent, no character development, twists & turns, chekhov's gun, whodunnit
+159858: demon, Demon, supernatural, the conjuring, based on a true story, paranormal investigation, haunted house, England, 70s, British accents
+122906: Africa, Marvel, MCU, superhero, social commentary, strong female characters, great villain, predictable, diverse cast, great costumes
 
 **One criterion I considered for the judge and rejected, and why** (the one I used is in `judge/criterion.md`)**:** XXXX
 
