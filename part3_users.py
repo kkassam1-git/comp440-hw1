@@ -37,6 +37,7 @@ from pathlib import Path
 import pandas as pd
 
 from load_data import load_all
+from part2_tags import score as movie_score
 
 REPO = Path(__file__).resolve().parent
 WRITEUP = REPO / "WRITEUP.md"
@@ -89,18 +90,40 @@ def add_me(ratings: pd.DataFrame, mine: pd.DataFrame) -> pd.DataFrame:
 
 # ------------------------------------------------------------------- yours to write ---
 
-def score(ratings: pd.DataFrame, tags: pd.DataFrame, movies: pd.DataFrame):
-    """What tags best describe a user. This one is yours; the handout's Part 3, step 2.
+MIDPOINT = 2.5  # the student's line between a high and a low rating
+# the student's ten users: themselves, plus nine drawn at random (seed 440) from the users
+# with at least 10 tag applications
+USERS = [ME, 10611, 21565, 61181, 67478, 120553, 132153, 144977, 150744, 158502]
 
-    Return one row per user-tag pair: userId, tag, score, higher meaning the tag describes
-    the user better. Start simply, test it on your own ratings, and improve it twice with
-    what your viewer and your judge show you."""
-    print("score(user, tag) is yours to write")
+
+def contributions(ratings, tags, movies, users=USERS):
+    """One row per user, movie and tag: (rating - 2.5) * the Part 2 score(movie, tag)."""
+    movie_scores = movie_score(tags, ratings, movies).dropna(subset=["score"])
+    theirs = ratings[ratings["userId"].isin(users)]
+    pairs = theirs.merge(movie_scores[["movieId", "tag", "score"]], on="movieId")
+    pairs["contribution"] = (pairs["rating"] - MIDPOINT) * pairs["score"]
+    return pairs[["userId", "movieId", "rating", "tag", "contribution"]]
+
+
+def score(ratings: pd.DataFrame, tags: pd.DataFrame, movies: pd.DataFrame, users=USERS,
+          parts=None):
+    """The student's score(user, tag).
+
+    For each movie m the user rated and each tag t on m:
+        contribution = (rating - 2.5) * score(m, t), the Part 2 movie score
+    score(user, t) = sum of contributions over the user's movies, divided by the number of
+                     movies the user rated (all of them, not only those carrying t)"""
+    if parts is None:
+        parts = contributions(ratings, tags, movies, users)
+    rated = ratings[ratings["userId"].isin(users)].groupby("userId").size().rename("n_rated")
+    out = (parts.groupby(["userId", "tag"])["contribution"].sum().rename("total")
+           .reset_index().join(rated, on="userId"))
+    out["score"] = out["total"] / out["n_rated"]
+    return (out[["userId", "tag", "score"]]
+            .sort_values(["userId", "score"], ascending=[True, False], ignore_index=True))
 
 
 def part3_users(ratings, tags, movies, links):
-    print("part 3 unimplemented")  # delete this line when you start
-
     print("== (1) my ratings ==")
     mine, skipped = read_my_ratings()
     print(f'{len(mine)} rating(s) read from the "{SLOT}" slot in WRITEUP.md.')
@@ -118,7 +141,11 @@ def part3_users(ratings, tags, movies, links):
         print(f"{len(ratings):,} ratings, none of them yours yet.")
 
     print("== (2) score(user, tag) ==")
-    score(ratings, tags, movies)
+    scores = score(ratings, tags, movies)
+    print(f"  {len(scores):,} rows over {scores.userId.nunique():,} user(s)")
+    print(f"  my ten best tags (userId {ME}):")
+    for row in scores[scores.userId == ME].head(10).itertuples():
+        print(f"    {row.tag:<28} {row.score:>8.3f}")
 
 
 if __name__ == "__main__":

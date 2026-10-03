@@ -207,19 +207,42 @@ and no numbering, the movieId first and the rating last, as in `296, Pulp Fictio
 
 **My 20 ratings:**
 
-XXXX
+858, Godfather, The (1972), 4.5
+254726, Dune (2021), 4.5
+134130, The Martian (2015), 5.0
+4995, Beautiful Mind, A (2001), 4.0
+106782, Wolf of Wall Street, The (2013), 4.5
+148626, Big Short, The (2015), 4.5
+49272, Casino Royale (2006), 3.5
+278702, Glass Onion: A Knives Out Mystery (2022), 3.5
+159858, The Conjuring 2 (2016), 4.0
+122906, Black Panther (2017), 4.5
+50872, Ratatouille (2007), 3.5
+96079, Skyfall (2012), 4.0
+91658, Girl with the Dragon Tattoo, The (2011), 4.5
+138036, The Man from U.N.C.L.E. (2015), 4.5
+79224, Karate Kid, The (2010), 3.5
+93840, Cabin in the Woods, The (2012), 2.5
+61024, Pineapple Express (2008), 4.0
+140110, The Intern (2015), 4.5
+49530, Blood Diamond (2006), 5.0
+92259, Intouchables (2011), 4.5
 
 **My `score(user, tag)`, in a sentence, and why I started there (about 100 words):**
 
-XXXX
+Im going to set the midpoint at 2.5 - subtract it from the rating to see where it stands from this threshold line then multiply it with my score to come up with a new score - then when putting together movies simply sum the movies and divided by the number of movies.
 
 **What my score says about me: my top ten tags, and whether they describe my taste (about 100 words):**
 
-XXXX
+From `part3_users.py` section (2): sci-fi 6.933, space 6.092, mafia 5.172, great acting 4.548, space travel 4.524, funny 4.481, leonardo dicaprio 4.409, visually appealing 4.147, based on a true story 4.117, true story 3.858.
+
+Looks lije the formula is doing exactly what it should and pushed up the movies I rated higher up and those which would have had higher scores, I'm surprised none of those (drama, crime, action, thriller, spy) showed up though. they do describe my taste
 
 **What my user viewer shows and why I chose that (about 100 words):**
 
-XXXX
+My user viewer shows the ten users and their top 10 associated tags under score(user,tag). The 5 movies that contributed the most to this tag are under each one. The ratings they were given and the actual contribution number too.
+
+I designed it such that a tag score is provided with context and how the movies contributed to those tags, highlight extremes or other patterns in how these tags show up with their scores.
 
 **What I put in the description column for a person, and why (about 150 words):**
 
