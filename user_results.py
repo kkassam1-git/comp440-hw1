@@ -25,7 +25,9 @@ body { font-family: Helvetica, Arial, sans-serif; margin: 20px; background: var(
        color: var(--ink); }
 table { border-collapse: collapse; margin: 4px 0 14px; }
 th, td { border: 1px solid var(--line); padding: 3px 8px; text-align: left; }
-.muted { color: var(--muted); }"""
+.muted { color: var(--muted); }
+tr.spike td { background: #f8d4d4; color: #1a1a1a; }"""
+SPIKE = 0.5  # the student's flag: one movie supplies more than half of a tag's total
 
 
 def build():
@@ -40,9 +42,11 @@ def build():
     for user in USERS:
         rows = []
         for t in scores[scores.userId == user].head(TOP_TAGS).itertuples():
-            top = (parts[(parts.userId == user) & (parts.tag == t.tag)]
-                   .sort_values("contribution", ascending=False).head(TOP_MOVIES))
-            rows.append((t.tag, t.score, [(titles[m.movieId], m.rating, m.contribution)
+            every = parts[(parts.userId == user) & (parts.tag == t.tag)]
+            total = every["contribution"].sum()
+            top = every.sort_values("contribution", ascending=False).head(TOP_MOVIES)
+            rows.append((t.tag, t.score, [(titles[m.movieId], m.rating, m.contribution,
+                                           m.contribution / total)
                                           for m in top.itertuples()]))
         out.append((user, int(stats.loc[user, "size"]), stats.loc[user, "mean"], rows))
     return out
@@ -52,16 +56,20 @@ def render(users):
     body = ["<h1>User viewer</h1>",
             '<p class="muted">Per user: the top %d tags under score(user, tag), and under each '
             "the %d movies contributing most, with the user's rating and the contribution "
-            "(rating − 2.5) × score(movie, tag).</p>" % (TOP_TAGS, TOP_MOVIES)]
+            "(rating − 2.5) × score(movie, tag), and that movie's share of the sum of all the "
+            "tag's contributions. A row is light red when one movie supplies more than half."
+            "</p>" % (TOP_TAGS, TOP_MOVIES)]
     for user, n, mean, rows in users:
         body.append("<h2>User %d</h2><p class=\"muted\">%d ratings, mean %.2f</p>"
                     % (user, n, mean))
         for rank, (tag, value, films) in enumerate(rows, 1):
             body.append("<h3>%d. %s — %.3f</h3>" % (rank, html.escape(tag), value))
-            body.append("<table><tr><th>Movie</th><th>Rating</th><th>Contribution</th></tr>%s"
-                        "</table>" % "".join(
-                            "<tr><td>%s</td><td>%.1f</td><td>%.2f</td></tr>"
-                            % (html.escape(title), r, c) for title, r, c in films))
+            body.append("<table><tr><th>Movie</th><th>Rating</th><th>Contribution</th>"
+                        "<th>Share of the tag's total</th></tr>%s</table>" % "".join(
+                            "<tr%s><td>%s</td><td>%.1f</td><td>%.2f</td><td>%.0f%%</td></tr>"
+                            % (' class="spike"' if share > SPIKE else "",
+                               html.escape(title), r, c, 100 * share)
+                            for title, r, c, share in films))
     return ("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
             "<title>User viewer</title>\n<style>\n%s\n</style>\n</head>\n<body>\n%s\n"

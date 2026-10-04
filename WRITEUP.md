@@ -232,6 +232,8 @@ and no numbering, the movieId first and the rating last, as in `296, Pulp Fictio
 
 Im going to set the midpoint at 2.5 - subtract it from the rating to see where it stands from this threshold line then multiply it with my score to come up with a new score - then when putting together movies simply sum the movies and divided by the number of movies.
 
+A tag as I described should reflect the movies a person has rated the highest, weighted by how much they liked them (so rating itself). Using the 2.5 threshold, in the middle, is a way to define above or below this middle ground. I resuse the part 2 score() formula since that measures relevance of tags to movies and then extends to users.
+
 **What my score says about me: my top ten tags, and whether they describe my taste (about 100 words):**
 
 From `part3_users.py` section (2): sci-fi 6.933, space 6.092, mafia 5.172, great acting 4.548, space travel 4.524, funny 4.481, leonardo dicaprio 4.409, visually appealing 4.147, based on a true story 4.117, true story 3.858.
@@ -248,6 +250,12 @@ I designed it such that a tag score is provided with context and how the movies 
 
 how many movies they rated in total, their mean rating, their top 5 highest rated movies (title plus rating like before), and then what portion of the ratings in their movies falls under a 3.0 threshold or above.
 
+Rating counts and mean shows how many ratings a person has and on average how do they rate.
+
+Top 5 highest rated titels provides context for the judge to determine the kind of movies the user likes.
+
+Share above/below 3.0 shows how strong of a singal, up or down, a particular rating is.
+
 **My criterion for people: what it asks the judge to do that the movie criterion did not (about 60 words):**
 
 The people paragraph looks across movies and rewards tags that recur basd on pattern instead of tags that solely fit one highly rated movie. The movie criterion does not look across movies , since it judges single movies from my understanding, nothing to compare against.
@@ -258,11 +266,15 @@ The people paragraph looks across movies and rewards tags that recur basd on pat
 
 **Improvement 1: what I changed in the scoring function, what the judge and the viewer showed before and after (about 150 words):**
 
-XXXX
+I want to change how score() uses contributions from multiple moves, to normalize the spiking effect from a single, dominant mvoies.
+
+144977's sci-fi tag is 8.45  built mostly from Star Wars alone contributing 445.69, nearly double the next highest movie. User 67478's anime tag (14.523), by contrast, comes from five Ghibli films all rated 5.0, a genuinely consistent pattern. There's no component that tells a spike apart without manually going into the breakdwon.
+
+I've thought through it and I cant seem to figure it out, I'd say just indicate on the viwer that this row has a movie contributiung +50% add a new column that shows percentage contribution if more than 50% turn light red
 
 **Improvement 2: the same (about 150 words):**
 
-XXXX
+After adding the share column, we see 14 rows across 10 users be highlighted for contributing 50% more. This is concentraed in users with fewer ratings, users with higher number of ratings do no suffer from this issue I noticed.  More ratings translate to  naturally more diluted shares per movie, all dependent on the sample we're looking at.
 
 ## Part 4. Working with Claude
 
@@ -270,11 +282,14 @@ Give these to Claude the way you gave it the rest. Graded on the catch and the c
 making Claude look good or bad.
 
 **A moment where Claude was wrong or overconfident, how you caught it, and where it
-happened. Name the part and the step, so the moment can be found:** XXXX
+happened. Name the part and the step, so the moment can be found:**
 
-**One call where you overrode Claude, and why:** XXXX
+Not wrong, just that I answered a lot of questions in prior responses and it would just take me in circles sometimes.
 
-**What you would hand to Claude sooner next time:** XXXX
+**One call where you overrode Claude, and why:** Not anywhere from what I remember.
+
+**What you would hand to Claude sooner next time:** N/A
+
 
 **Did Claude name the misleading tag in Part 2 step 1 before you did? What happened:** XXXX
 
@@ -283,4 +298,4 @@ would have been missing from it:** XXXX
 
 **Hours spent:** 
 
-**Anyone who helped you, or "no one":** XXXX
+**Anyone who helped you, or "no one":** N/A
