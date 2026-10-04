@@ -1,3 +1,1 @@
-Placeholder. Replace all of it with your own paragraph on what makes a tag describe a
-person's taste. It is yours, it is graded, and the movie paragraph in `judge/criterion.md`
-will not do: that one is about films, and it rates tags on people badly.
+A tag describes the user well when it fits the movies rated highest by them, with how high they've rated them being the weight. A tag that is from one highly rated movie is not a great descriptor unless it appears across other highly rated movies too. It should reflect their general pattern of liking across their choice of top movies.

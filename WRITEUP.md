@@ -246,15 +246,15 @@ I designed it such that a tag score is provided with context and how the movies 
 
 **What I put in the description column for a person, and why (about 150 words):**
 
-XXXX
+how many movies they rated in total, their mean rating, their top 5 highest rated movies (title plus rating like before), and then what portion of the ratings in their movies falls under a 3.0 threshold or above.
 
 **My criterion for people: what it asks the judge to do that the movie criterion did not (about 60 words):**
 
-XXXX
+The people paragraph looks across movies and rewards tags that recur basd on pattern instead of tags that solely fit one highly rated movie. The movie criterion does not look across movies , since it judges single movies from my understanding, nothing to compare against.
 
 **The user-tag pairs I chose to judge, how many, and why those (about 100 words):**
 
-XXXX
+20 seemed to be the right amount that didn't use too much copute but also provides a decent sized sample size. I split top10 + random so the comparison does not just look at top 10 by score() and tests whetehr score() may be missing tags the judge considers a good fit.
 
 **Improvement 1: what I changed in the scoring function, what the judge and the viewer showed before and after (about 150 words):**
 
@@ -281,6 +281,6 @@ happened. Name the part and the step, so the moment can be found:** XXXX
 **The figure. Would asking Claude "what does this show?" have produced your sentence, and what
 would have been missing from it:** XXXX
 
-**Hours spent:** XXXX
+**Hours spent:** 
 
 **Anyone who helped you, or "no one":** XXXX

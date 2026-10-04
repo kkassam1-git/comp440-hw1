@@ -36,6 +36,9 @@ from pathlib import Path
 
 import pandas as pd
 
+import numpy as np
+
+from embed_tags import clean_tag
 from load_data import load_all
 from part2_tags import score as movie_score
 
@@ -123,6 +126,65 @@ def score(ratings: pd.DataFrame, tags: pd.DataFrame, movies: pd.DataFrame, users
             .sort_values(["userId", "score"], ascending=[True, False], ignore_index=True))
 
 
+JUDGE_TAGS = 20  # per person: the top 10 under score(), then 10 at random
+SEED = 440
+
+
+def write_users_csv(ratings, tags, movies, scores):
+    """judge/users.csv, by the student's rules.
+
+    description: how many movies the person rated, their mean rating, their five highest
+    rated movies with the rating (ties go to whichever comes first in the ratings table,
+    which within a user is by movieId), and the share of their ratings below 3.0 and at
+    3.0 or above.
+    tags: vocabulary tags only. The person's top 10 under score(user, tag), then 10 drawn
+    at random (seed 440) from the other vocabulary tags on movies they rated. Listed
+    alphabetically, as judge/movies.csv does, so the order does not say which are which."""
+    vocabulary = {t.strip() for t in (REPO / "judge" / "vocabulary.txt")
+                  .read_text().splitlines() if t.strip()}
+    titles = movies.set_index("movieId")["title"]
+    on_movies = tags.assign(tag=clean_tag(tags["tag"]))
+    rows = []
+    for user in USERS:
+        theirs = ratings[ratings.userId == user]
+        best = theirs.sort_values("rating", ascending=False, kind="stable").head(5)
+        below = (theirs.rating < 3.0).mean()
+        description = (f"Rated {len(theirs):,} movies, mean rating {theirs.rating.mean():.2f}. "
+                       f"Five highest rated: "
+                       + "; ".join(f"{titles[m]} ({r:.1f})"
+                                   for m, r in zip(best.movieId, best.rating))
+                       + f". Share of ratings below 3.0: {below:.0%}; "
+                       f"at 3.0 or above: {1 - below:.0%}.")
+        ranked = scores[(scores.userId == user) & scores.tag.isin(vocabulary)]
+        top = list(ranked.tag.head(10))
+        pool = sorted(set(on_movies.loc[on_movies.movieId.isin(theirs.movieId), "tag"])
+                      & vocabulary - set(top))
+        drawn = list(np.random.default_rng(SEED + user).choice(pool, 10, replace=False))
+        rows.append({"id": user, "description": description,
+                     "tags": "|".join(sorted(top + drawn))})
+    out = pd.DataFrame(rows)
+    out.to_csv(REPO / "judge" / "users.csv", index=False)
+    return out
+
+
+def side_by_side(scores):
+    """The student's comparison with the user judge, on the pairs the judge rated.
+
+    Per person, the 20 judged tags are ranked twice: by score(user, tag), and by the judge's
+    1 to 5 rating (ties broken alphabetically, as results_viewer.py does). Agreement is how
+    many of score()'s top 5 the judge rated 4 or 5; a pair's disagreement is the gap between
+    its two ranks."""
+    judge = pd.read_csv(REPO / "judge" / "ratings_users.csv", keep_default_na=False)
+    pairs = judge.rename(columns={"id": "userId"}).merge(scores, on=["userId", "tag"],
+                                                         how="left")
+    pairs["score_rank"] = (pairs.sort_values(["score", "tag"], ascending=[False, True])
+                           .groupby("userId").cumcount() + 1)
+    pairs["judge_rank"] = (pairs.sort_values(["rating", "tag"], ascending=[False, True])
+                           .groupby("userId").cumcount() + 1)
+    pairs["gap"] = (pairs["score_rank"] - pairs["judge_rank"]).abs()
+    return pairs
+
+
 def part3_users(ratings, tags, movies, links):
     print("== (1) my ratings ==")
     mine, skipped = read_my_ratings()
@@ -146,6 +208,33 @@ def part3_users(ratings, tags, movies, links):
     print(f"  my ten best tags (userId {ME}):")
     for row in scores[scores.userId == ME].head(10).itertuples():
         print(f"    {row.tag:<28} {row.score:>8.3f}")
+
+    print("== (3) judge/users.csv ==")
+    users = write_users_csv(ratings, tags, movies, scores)
+    print(f"  {len(users)} people, {users.tags.str.count('[|]').add(1).sum()} tags to rate")
+    for row in users.itertuples():
+        print(f"  {row.id}: {row.description}")
+
+    print("== (4) score() beside the user judge ==")
+    if not (REPO / "judge" / "ratings_users.csv").exists():
+        print("  judge/ratings_users.csv is not there yet: run the judge on judge/users.csv")
+        return
+    pairs = side_by_side(scores)
+    top5 = pairs[pairs.score_rank <= 5]
+    per_user = top5.groupby("userId")["rating"].apply(lambda r: int((r >= 4).sum()))
+    best = (pairs.groupby("userId")["rating"].apply(lambda r: min(5, int((r >= 4).sum()))))
+    print(f"  of score()'s top 5 per person, how many the judge rated 4 or 5: "
+          f"{per_user.mean():.2f} of 5 over {len(per_user)} people "
+          f"(best possible {best.mean():.2f}); {pairs.score.isna().sum()} pairs had no score")
+    for user in USERS:
+        print(f"  {user}: {per_user.get(user, 0)} of 5 (best possible {best.get(user, 0)})")
+    print("  the ten pairs furthest apart, by the gap between the two ranks (of 20):")
+    print(f"    {'userId':>7} {'tag':<26} {'score rank':>10} {'judge rank':>10} "
+          f"{'judge':>5} {'gap':>4}")
+    for r in pairs.sort_values(["gap", "userId", "tag"],
+                               ascending=[False, True, True]).head(10).itertuples():
+        print(f"    {r.userId:>7} {r.tag:<26} {r.score_rank:>10} {r.judge_rank:>10} "
+              f"{r.rating:>5} {r.gap:>4}")
 
 
 if __name__ == "__main__":
