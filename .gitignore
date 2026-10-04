@@ -12,3 +12,6 @@ __pycache__/
 tmp/
 # macOS
 .DS_Store
+
+# tag embeddings: too large to push; rebuild with `uv run python embed_tags.py`
+tag_embeddings_*.npz
